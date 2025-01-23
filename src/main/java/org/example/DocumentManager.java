@@ -47,9 +47,10 @@ public class DocumentManager {
             if(request.containsContents != null && !request.containsContents.isEmpty()
                     && containsAnySubstring(document.content, request.containsContents)) return true;
             if(request.authorIds != null && !request.authorIds.isEmpty()
-                    && request.authorIds.contains(document.getId())) return true;
+                    && request.authorIds.contains(document.author.getId())) return true;
 
-            if (isWithingDateRange(document.created, request.createdFrom, request.createdTo)) return true;
+            if ((request.createdTo != null || request.createdFrom != null) &&
+                    isWithingDateRange(document.created, request.createdFrom, request.createdTo)) return true;
             return false;
             }
         ).toList(); // return unmodifiable list
@@ -76,6 +77,7 @@ public class DocumentManager {
      * @return true if the creation date is within the specified range; false otherwise.
      */
     private boolean isWithingDateRange(Instant created, Instant createdFrom, Instant createdTo) {
+        if(created == null) return false;
         if (createdFrom != null && created.compareTo(createdFrom) < 0) {
             return false;
         }
